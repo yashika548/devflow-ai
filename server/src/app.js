@@ -11,9 +11,14 @@ const chatRoutes = require("./routes/chatRoutes");
 const app = express();
 
 // Middleware
+const cors = require("cors");
+
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: [
+      "http://localhost:3000",
+      "https://devflow-ai-z1mc.vercel.app",
+    ],
     credentials: true,
   })
 );
