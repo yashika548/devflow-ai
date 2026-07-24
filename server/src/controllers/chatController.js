@@ -92,9 +92,42 @@ const deleteChat = async (req, res) => {
   }
 };
 
+const renameChat = async (req, res) => {
+  try {
+    const { chatId } = req.params;
+    const { title } = req.body;
+
+    const chat = await Chat.findByIdAndUpdate(
+      chatId,
+      { title },
+      { new: true }
+    );
+
+    if (!chat) {
+      return res.status(404).json({
+        success: false,
+        message: "Chat not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      chat,
+    });
+  } catch (error) {
+    console.log(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
+};
+
 module.exports = {
   createChat,
   getChat,
   getUserChats,
   deleteChat,
+  renameChat,
 };
