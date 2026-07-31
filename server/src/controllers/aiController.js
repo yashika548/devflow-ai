@@ -37,12 +37,17 @@ const getAIResponse = async (req, res) => {
       content: prompt,
     });
 
-    if (chat.title === "New Chat") {
-      chat.title =
-      prompt.length > 30
-      ? prompt.substring(0, 30) + "..."
-      : prompt;
-    }
+    // Auto title on first message
+if (chat.title === "New Chat" && chat.messages.length === 1) {
+  chat.title = prompt
+    .trim()
+    .replace(/\s+/g, " ")
+    .substring(0, 35);
+
+  if (prompt.length > 35) {
+    chat.title += "...";
+  }
+}
     
 
     console.log("User message added");

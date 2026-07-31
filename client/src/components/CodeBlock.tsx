@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { atomDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
+
 interface Props {
   language: string;
   value: string;
@@ -24,9 +25,9 @@ export default function CodeBlock({ language, value }: Props) {
     <div className="relative my-4">
       <button
         onClick={copyCode}
-        className="absolute top-2 right-2 bg-zinc-700 hover:bg-zinc-600 px-3 py-1 rounded text-sm"
+        className="absolute top-2 right-2 z-10 bg-zinc-700 hover:bg-zinc-600 text-white px-3 py-1 rounded-lg text-sm"
       >
-        {copied ? "Copied ✅" : "Copy"}
+        {copied ? "✅ Copied" : "📋 Copy"}
       </button>
 
       <SyntaxHighlighter
@@ -34,7 +35,7 @@ export default function CodeBlock({ language, value }: Props) {
         style={atomDark}
         customStyle={{
           borderRadius: "10px",
-          paddingTop: "40px",
+          paddingTop: "45px",
         }}
       >
         {value}
