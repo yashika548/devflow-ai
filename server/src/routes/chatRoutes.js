@@ -2,7 +2,7 @@ const express = require("express");
 
 const router = express.Router();
 
-const { createChat, getUserChats, getChat,deleteChat, renemeChat,} = require("../controllers/chatController");
+const { createChat, getUserChats, getChat,deleteChat, renameChat,} = require("../controllers/chatController");
 
 router.post("/create", createChat);
 router.get("/user/:userId", getUserChats);
