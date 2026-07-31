@@ -18,8 +18,11 @@ app.use(
     origin: [
       "http://localhost:3000",
       "https://devflow-ai-z1mc.vercel.app",
+      "https://devflow-ai-z1mc-aocdero8a-yashika11.vercel.app",
     ],
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 app.use(express.json());
