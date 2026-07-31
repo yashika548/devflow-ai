@@ -1,5 +1,6 @@
 "use client";
 
+import toast from "react-hot-toast";
 import { useState } from "react";
 import { loginUser } from "@/services/auth";
 import { useRouter } from "next/navigation";
@@ -32,48 +33,76 @@ export default function LoginPage() {
 
       console.log("User Saved:", localStorage.getItem("user"));
 
-      alert("Login Successful");
+      toast.success("Login Successful 🎉");
 
+      setTimeout(() => {
       router.push("/chat");
+      }, 800);
     } catch (err: any) {
       console.log(err);
-      alert("Login Failed");
+      toast.error("Invalid Email or Password ❌");
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black">
-      <div className="w-full max-w-md bg-zinc-900 p-8 rounded-xl text-white">
+  <div className="min-h-screen bg-gradient-to-br from-black via-zinc-900 to-blue-950 flex items-center justify-center px-4">
 
-        <h1 className="text-3xl font-bold mb-6">
-          Login
+    <div className="w-full max-w-md bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl">
+
+      <div className="text-center mb-8">
+
+        <div className="text-6xl mb-3">
+          🤖
+        </div>
+
+        <h1 className="text-4xl font-bold text-white">
+          DevFlow AI
         </h1>
 
-        <input
-          name="email"
-          placeholder="Email"
-          value={form.email}
-          onChange={handleChange}
-          className="w-full p-3 rounded bg-zinc-800 mb-4"
-        />
-
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={form.password}
-          onChange={handleChange}
-          className="w-full p-3 rounded bg-zinc-800 mb-6"
-        />
-
-        <button
-          onClick={handleSubmit}
-          className="w-full bg-blue-600 py-3 rounded"
-        >
-          Login
-        </button>
+        <p className="text-gray-300 mt-3">
+          Your Intelligent Coding Assistant
+        </p>
 
       </div>
+
+      <input
+        name="email"
+        type="email"
+        placeholder="📧 Enter Email"
+        value={form.email}
+        onChange={handleChange}
+        className="w-full p-4 rounded-xl bg-zinc-900 text-white border border-zinc-700 outline-none mb-4 focus:border-blue-500 transition-all"
+      />
+
+      <input
+        type="password"
+        name="password"
+        placeholder="🔒 Enter Password"
+        value={form.password}
+        onChange={handleChange}
+        className="w-full p-4 rounded-xl bg-zinc-900 text-white border border-zinc-700 outline-none mb-6 focus:border-blue-500 transition-all"
+      />
+
+      <button
+        onClick={handleSubmit}
+        className="w-full bg-gradient-to-r from-blue-600 to-purple-600 py-4 rounded-xl font-semibold text-white hover:scale-105 transition-all duration-300 shadow-lg"
+      >
+        🚀 Login
+      </button>
+
+      <p className="text-center text-gray-400 mt-6">
+        Don't have an account?
+      </p>
+
+      <button
+        onClick={() => router.push("/register")}
+        className="w-full mt-3 border border-zinc-700 py-3 rounded-xl hover:bg-zinc-800 transition-all text-white"
+      >
+        Create Account
+      </button>
+
     </div>
-  );
+
+  </div>
+);
 }
