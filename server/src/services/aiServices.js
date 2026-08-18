@@ -1,5 +1,7 @@
 const Groq = require("groq-sdk");
 
+console.log("GROQ KEY EXISTS:", !!process.env.GROQ_API_KEY);
+
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
 });
@@ -17,6 +19,8 @@ const generateResponse = async (prompt) => {
       temperature: 0.7,
       max_tokens: 500,
     });
+
+    console.log("Groq response received");
 
     return completion.choices[0].message.content;
   } catch (error) {
