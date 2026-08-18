@@ -7,10 +7,6 @@ const getAIResponse = async (req, res) => {
 
     const { chatId, prompt } = req.body;
 
-    console.log("Chat ID:", chatId);
-    console.log("Prompt:", prompt);
-
-    // Validate request
     if (!chatId || !prompt?.trim()) {
       return res.status(400).json({
         success: false,
@@ -28,20 +24,18 @@ const getAIResponse = async (req, res) => {
       });
     }
 
-    console.log("Chat found:", chat._id);
-
-    // Make sure messages exists
+    // Ensure messages array exists
     if (!Array.isArray(chat.messages)) {
       chat.messages = [];
     }
 
-    // Save user message
+    // Add user message
     chat.messages.push({
       role: "user",
       content: prompt.trim(),
     });
 
-    // Set title for first message
+    // Set title
     if (
       (!chat.title || chat.title === "New Chat") &&
       chat.messages.length === 1
@@ -56,7 +50,6 @@ const getAIResponse = async (req, res) => {
       }
     }
 
-    // AI prompt
     const markdownPrompt = `
 You are a helpful AI coding assistant.
 
@@ -66,7 +59,7 @@ Use:
 - # for headings
 - ## for subheadings
 - bullet points where useful
-- code blocks with the correct language
+- proper code blocks with language names
 - tables whenever useful
 
 User Question:
@@ -75,18 +68,18 @@ ${prompt.trim()}
 
     console.log("Calling Groq...");
 
-    // Generate AI response
+    // Call AI
     const aiResponse = await generateResponse(markdownPrompt);
 
-    console.log("Groq response received");
+    console.log("AI response received");
 
-    // Save AI message
+    // Add AI message
     chat.messages.push({
       role: "assistant",
       content: aiResponse,
     });
 
-    // Save chat
+    // Save ONLY after successful AI response
     await chat.save();
 
     console.log("Chat saved successfully");
