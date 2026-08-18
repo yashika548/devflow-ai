@@ -13,6 +13,8 @@ export default function LoginPage() {
     password: "",
   });
 
+  const [loading, setLoading] = useState(false);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({
       ...form,
@@ -35,13 +37,14 @@ export default function LoginPage() {
 
       toast.success("Login Successful 🎉");
 
-      setTimeout(() => {
       router.push("/chat");
-      }, 800);
     } catch (err: any) {
       console.log(err);
       toast.error("Invalid Email or Password ❌");
     }
+    finally {
+    setLoading(false);
+  }
   };
 
   return (
@@ -84,11 +87,12 @@ export default function LoginPage() {
       />
 
       <button
-        onClick={handleSubmit}
-        className="w-full bg-gradient-to-r from-blue-600 to-purple-600 py-4 rounded-xl font-semibold text-white hover:scale-105 transition-all duration-300 shadow-lg"
-      >
-        🚀 Login
-      </button>
+  onClick={handleSubmit}
+  disabled={loading}
+  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 py-4 rounded-xl font-semibold text-white hover:scale-105 transition-all duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+>
+  {loading ? "⏳ Logging in..." : "🚀 Login"}
+</button>
 
       <p className="text-center text-gray-400 mt-6">
         Don't have an account?
