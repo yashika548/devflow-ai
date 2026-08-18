@@ -1,15 +1,19 @@
 const Groq = require("groq-sdk");
 
-console.log("GROQ KEY EXISTS:", !!process.env.GROQ_API_KEY);
-
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
 });
 
 const generateResponse = async (prompt) => {
-  try {
-    console.log("========== GROQ REQUEST ==========");
+  if (!process.env.GROQ_API_KEY) {
+    throw new Error("GROQ_API_KEY is missing");
+  }
 
+  if (!prompt || !prompt.trim()) {
+    throw new Error("Prompt is empty");
+  }
+
+  try {
     const completion = await groq.chat.completions.create({
       model: "llama-3.3-70b-versatile",
       messages: [
@@ -22,17 +26,21 @@ const generateResponse = async (prompt) => {
       max_tokens: 500,
     });
 
-    console.log("========== GROQ RESPONSE RECEIVED ==========");
+    const response = completion?.choices?.[0]?.message?.content;
 
-    return completion.choices[0].message.content;
+    if (!response) {
+      throw new Error("Empty response received from Groq");
+    }
 
+    return response;
   } catch (error) {
-    console.error("========== GROQ ERROR ==========");
-    console.error("Message:", error.message);
-    console.error("Status:", error.status);
-    console.error("Full error:", error);
+    console.error("GROQ ERROR:", error);
 
-    throw error;
+    throw new Error(
+      error?.error?.message ||
+      error?.message ||
+      "Groq API failed"
+    );
   }
 };
 

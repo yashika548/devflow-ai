@@ -1,28 +1,25 @@
 const Chat = require("../models/Chat");
 const generateResponse = require("../services/aiServices");
 
-
-
 const getAIResponse = async (req, res) => {
   try {
     console.log("========== AI API CALLED ==========");
-    console.log("Request Body:", req.body);
+
     const { chatId, prompt } = req.body;
 
-    console.log("Received Chat ID:", chatId);
-     console.log("Received Prompt:", prompt);
+    console.log("Chat ID:", chatId);
+    console.log("Prompt:", prompt);
 
-    if (!chatId || !prompt) {
+    // Validate request
+    if (!chatId || !prompt?.trim()) {
       return res.status(400).json({
         success: false,
         message: "Chat ID and Prompt are required",
       });
     }
 
-    // Find Chat
+    // Find chat
     const chat = await Chat.findById(chatId);
-
-     console.log("Found Chat:", chat);
 
     if (!chat) {
       return res.status(404).json({
@@ -31,79 +28,84 @@ const getAIResponse = async (req, res) => {
       });
     }
 
-    // Save User Message
+    console.log("Chat found:", chat._id);
+
+    // Make sure messages exists
+    if (!Array.isArray(chat.messages)) {
+      chat.messages = [];
+    }
+
+    // Save user message
     chat.messages.push({
       role: "user",
-      content: prompt,
+      content: prompt.trim(),
     });
 
-    // Auto title on first message
-if (chat.title === "New Chat" && chat.messages.length === 1) {
-  chat.title = prompt
-    .trim()
-    .replace(/\s+/g, " ")
-    .substring(0, 35);
+    // Set title for first message
+    if (
+      (!chat.title || chat.title === "New Chat") &&
+      chat.messages.length === 1
+    ) {
+      chat.title = prompt
+        .trim()
+        .replace(/\s+/g, " ")
+        .substring(0, 35);
 
-  if (prompt.length > 35) {
-    chat.title += "...";
-  }
-}
-    
+      if (prompt.trim().length > 35) {
+        chat.title += "...";
+      }
+    }
 
-    console.log("User message added");
-
-    // Generate AI Response
+    // AI prompt
     const markdownPrompt = `
-Respond ONLY in proper Markdown.
+You are a helpful AI coding assistant.
+
+Respond in proper Markdown.
 
 Use:
 - # for headings
 - ## for subheadings
-- - for bullet points
-- \`\`\`cpp for C++ code
-- Tables whenever useful
+- bullet points where useful
+- code blocks with the correct language
+- tables whenever useful
 
 User Question:
-${prompt}
+${prompt.trim()}
 `;
 
-const aiResponse = await generateResponse(markdownPrompt);
+    console.log("Calling Groq...");
 
-    console.log("AI Response:", aiResponse);
+    // Generate AI response
+    const aiResponse = await generateResponse(markdownPrompt);
 
-    console.log("------------------");
-console.log(aiResponse);
-console.log("------------------");
+    console.log("Groq response received");
 
-    // Save AI Message
+    // Save AI message
     chat.messages.push({
       role: "assistant",
       content: aiResponse,
     });
 
-    console.log("AI message added");
-
+    // Save chat
     await chat.save();
 
-    console.log("Chat saved");
+    console.log("Chat saved successfully");
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       response: aiResponse,
       chat,
     });
 
   } catch (error) {
-  console.error("========== AI ERROR ==========");
-  console.error("Message:", error.message);
-  console.error("Status:", error.status);
-  console.error("Stack:", error.stack);
+    console.error("========== AI CONTROLLER ERROR ==========");
+    console.error(error);
 
-  res.status(500).json({
-    success: false,
-    message: error.message || "Something went wrong",
-  });
-}
+    return res.status(500).json({
+      success: false,
+      message: error.message || "AI generation failed",
+    });
+  }
 };
 
 module.exports = {
