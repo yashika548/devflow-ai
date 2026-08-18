@@ -8,6 +8,8 @@ const groq = new Groq({
 
 const generateResponse = async (prompt) => {
   try {
+    console.log("========== GROQ REQUEST ==========");
+
     const completion = await groq.chat.completions.create({
       model: "llama-3.3-70b-versatile",
       messages: [
@@ -20,11 +22,16 @@ const generateResponse = async (prompt) => {
       max_tokens: 500,
     });
 
-    console.log("Groq response received");
+    console.log("========== GROQ RESPONSE RECEIVED ==========");
 
     return completion.choices[0].message.content;
+
   } catch (error) {
-    console.error(error);
+    console.error("========== GROQ ERROR ==========");
+    console.error("Message:", error.message);
+    console.error("Status:", error.status);
+    console.error("Full error:", error);
+
     throw error;
   }
 };

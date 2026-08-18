@@ -94,13 +94,16 @@ console.log("------------------");
     });
 
   } catch (error) {
-    console.log(error);
+  console.error("========== AI ERROR ==========");
+  console.error("Message:", error.message);
+  console.error("Status:", error.status);
+  console.error("Stack:", error.stack);
 
-    res.status(500).json({
-      success: false,
-      message: "Something went wrong",
-    });
-  }
+  res.status(500).json({
+    success: false,
+    message: error.message || "Something went wrong",
+  });
+}
 };
 
 module.exports = {
